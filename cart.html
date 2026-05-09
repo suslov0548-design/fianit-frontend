@@ -96,7 +96,6 @@
     <main class="cart-page container">
         <h1 style="color: var(--gold); margin-bottom: 30px;">Корзина</h1>
         <div class="cart-items" id="cart-items">
-            <!-- Рендер через JS -->
         </div>
         <div class="cart-total">Итого: <span id="total-price">0</span> ₽</div>
         <div class="checkout-form">
@@ -122,7 +121,7 @@
             return JSON.parse(localStorage.getItem('cart')) || [];
         }
 
-        // Вспомогательная функция обновления значка корзины (если есть)
+        // Вспомогательная функция обновления значка корзины
         function updateCartIcon() {
             const cart = getCart();
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
