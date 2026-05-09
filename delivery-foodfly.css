@@ -1,0 +1,56 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; color: #1e1e2f; background: #fff; }
+.btn-primary-custom { background: #ff6b35; border: none; color: white; padding: 10px 24px; border-radius: 40px; font-weight: 600; transition: all 0.3s; }
+.btn-primary-custom:hover { background: #e55a2b; color: white; transform: scale(1.02); }
+.btn-outline-custom { border: 2px solid #ff6b35; color: #ff6b35; background: transparent; padding: 8px 20px; border-radius: 40px; font-weight: 600; transition: all 0.3s; }
+.btn-outline-custom:hover { background: #ff6b35; color: white; }
+.section-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; position: relative; display: inline-block; }
+.section-title::after { content: ''; position: absolute; bottom: -10px; left: 0; width: 60px; height: 4px; background: #ff6b35; border-radius: 2px; }
+.text-accent { color: #ff6b35; }
+.bg-light-cream { background: #fffaf5; }
+.card { border: none; border-radius: 16px; overflow: hidden; transition: all 0.3s; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+.card:hover { transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+.card-img-top { height: 200px; object-fit: cover; }
+.badge-custom { background: #ff6b35; color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.8rem; }
+.testimonial-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+/* Уведомления */
+.notification-container { position: fixed; top: 80px; right: 20px; z-index: 2000; width: 350px; }
+.notification { background: white; border-radius: 12px; padding: 16px; margin-bottom: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; animation: slideIn 0.3s ease; }
+.notification.success { border-left: 4px solid #28a745; }
+.notification.error { border-left: 4px solid #dc3545; }
+.notification.info { border-left: 4px solid #17a2b8; }
+.notification.warning { border-left: 4px solid #ffc107; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* Корзина */
+.cart-sidebar { position: fixed; top: 0; right: -400px; width: 380px; height: 100vh; background: white; box-shadow: -5px 0 30px rgba(0,0,0,0.1); z-index: 1050; transition: right 0.3s ease; padding: 20px; overflow-y: auto; }
+.cart-sidebar.open { right: 0; }
+.cart-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); z-index: 1040; display: none; }
+.cart-overlay.open { display: block; }
+.cart-item { display: flex; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+.cart-item img { width: 60px; height: 60px; border-radius: 10px; object-fit: cover; margin-right: 15px; }
+.cart-item-details { flex: 1; }
+.cart-item-title { font-weight: 600; margin-bottom: 5px; }
+.cart-item-price { color: #ff6b35; font-weight: 600; }
+.cart-item-controls { display: flex; align-items: center; gap: 10px; }
+.cart-item-controls button { background: #f0f0f0; border: none; width: 28px; height: 28px; border-radius: 8px; font-weight: bold; }
+/* Модалки */
+.modal-content { border-radius: 24px; border: none; }
+.nav-tabs .nav-link { border: none; font-weight: 500; color: #666; padding: 12px 24px; }
+.nav-tabs .nav-link.active { color: #ff6b35; background: transparent; border-bottom: 3px solid #ff6b35; }
+.form-control { border-radius: 16px; padding: 12px 16px; border: 1px solid #ddd; }
+.form-control:focus { box-shadow: none; border-color: #ff6b35; }
+.form-control.is-invalid { border-color: #dc3545; }
+/* Админ-панель */
+.admin-badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4px 12px; border-radius: 30px; font-size: 0.8rem; }
+.user-row { cursor: pointer; transition: background 0.2s; }
+.user-row:hover { background: #f8f9fa; }
+/* Колокольчик уведомлений */
+.notifications-dropdown { max-height: 400px; overflow-y: auto; width: 350px; padding: 0; }
+.notification-item { padding: 12px 16px; border-bottom: 1px solid #eee; cursor: pointer; }
+.notification-item:hover { background: #f8f9fa; }
+.notification-item.unread { background: #eef2ff; }
+@media (max-width: 768px) {
+    .cart-sidebar { width: 100%; right: -100%; }
+    .section-title { font-size: 2rem; }
+    .notification-container { width: calc(100% - 40px); }
+}

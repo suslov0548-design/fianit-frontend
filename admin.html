@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администратор - Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-panel {
+            padding: 40px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .order-card, .menu-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .order-header, .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .order-status, .menu-actions button {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        .status-new { background: #f8cecc; color: #b85450; }
+        .status-confirmed { background: #d5e8d4; color: #82b366; }
+        .status-completed { background: #dae8fc; color: #6c8ebf; }
+        .status-cancelled { background: #eee; color: #666; }
+        .order-items, .menu-items-list {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .btn-action, .btn-add {
+            background: var(--gold);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+            margin-right: 10px;
+        }
+        .btn-action:hover, .btn-add:hover {
+            background: var(--gold-light);
+        }
+        .btn-danger {
+            background: #b85450;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .logout {
+            float: right;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .tabs {
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 20px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background: var(--gold);
+            color: #000;
+        }
+        .error { color: #ff4444; }
+        .success { color: #82b366; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: var(--gold); }
+        .form-group input, .form-group select { width: 100%; padding: 8px; background: var(--bg-primary); border: 1px solid #333; color: var(--text); border-radius: 4px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background: var(--bg-secondary); padding: 30px; border-radius: 8px; max-width: 400px; width: 90%; }
+        .modal-content h4 { color: var(--gold); margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Фианит</a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="menu.html">Меню</a>
+                <a href="delivery.html">Доставка</a>
+                <a href="login.html">Выход</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="admin-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: var(--gold);">Панель администратора</h2>
+            <button class="logout" onclick="logout()">Выйти</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('orders')">Заказы</button>
+            <button class="tab-btn" onclick="switchTab('menu-editor')">Управление меню</button>
+        </div>
+
+        <!-- Вкладка Заказы -->
+        <div id="tab-orders">
+            <div id="orders-container"><p>Загрузка заказов...</p></div>
+        </div>
+
+        <!-- Вкладка Управление меню -->
+        <div id="tab-menu-editor" style="display: none;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <!-- Категории -->
+                <div>
+                    <h3 style="color: var(--gold);">Категории</h3>
+                    <button class="btn-add" onclick="openCategoryModal()">Добавить категорию</button>
+                    <div id="categories-list" style="margin-top: 20px;"></div>
+                </div>
+                <!-- Блюда -->
+                <div>
+                    <h3 style="color: var(--gold);">Блюда</h3>
+                    <button class="btn-add" onclick="openMenuItemModal()">Добавить блюдо</button>
+                    <div id="menu-items-list" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="modal">
+        <div class="modal-content" id="modal-content"></div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        if (!token || role !== 'admin') window.location.href = 'login.html';
+
+        const API = 'http://localhost:3000/api';
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-orders').style.display = tab === 'orders' ? 'block' : 'none';
+            document.getElementById('tab-menu-editor').style.display = tab === 'menu-editor' ? 'block' : 'none';
+            event.target.classList.add('active');
+            if (tab === 'menu-editor') { loadCategories(); loadMenuItems(); }
+        }
+
+        // ===== Управление заказами =====
+        async function loadOrders() {
+            const container = document.getElementById('orders-container');
+            try {
+                const response = await fetch(API + '/orders', { headers: { 'Authorization': `Bearer ${token}` } });
+                const orders = await response.json();
+                container.innerHTML = orders.length === 0 ? '<p>Нет заказов</p>' : orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <strong>Заказ №${order.id}</strong>
+                            <span class="order-status status-${order.status}">${order.status}</span>
+                        </div>
+                        <div>Гость: ${order.guestName} | Телефон: ${order.guestPhone}</div>
+                        <div>Сумма: ${order.totalAmount} ₽</div>
+                        <div class="order-items">
+                            ${order.orderItems.map(oi => `<div>– ${oi.menuItem.name} (x${oi.quantity}) – ${oi.price} ₽</div>`).join('')}
+                        </div>
+                        <div style="margin-top: 10px;">
+                            ${order.status === 'new' ? `
+                                <button class="btn-action" onclick="updateOrderStatus(${order.id}, 'confirmed')">Подтвердить</button>
+                                <button class="btn-danger" onclick="updateOrderStatus(${order.id}, 'cancelled')">Отменить</button>` : ''}
+                            ${order.status === 'confirmed' ? `<button class="btn-action" onclick="updateOrderStatus(${order.id}, 'completed')">Завершить</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            } catch { container.innerHTML = '<p class="error">Ошибка загрузки заказов</p>'; }
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            await fetch(`${API}/orders/${orderId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ status })
+            });
+            loadOrders();
+        }
+
+        // ===== Управление меню =====
+        async function loadCategories() {
+            const container = document.getElementById('categories-list');
+            const res = await fetch(API + '/categories', { headers: { 'Authorization': `Bearer ${token}` } });
+            const categories = await res.json();
+            container.innerHTML = categories.map(cat => `
+                <div class="menu-card">
+                    <strong>${cat.name}</strong> (порядок: ${cat.sortOrder})
+                    <button class="btn-action" onclick="editCategory(${cat.id}, '${cat.name}', ${cat.sortOrder})">Ред.</button>
+                    <button class="btn-danger" onclick="deleteCategory(${cat.id})">Удалить</button>
+                </div>
+            `).join('');
+        }
+
+        async function loadMenuItems() {
+            const container = document.getElementById('menu-items-list');
+            const res = await fetch(API + '/menu', { headers: { 'Authorization': `Bearer ${token}` } });
+            const items = await res.json();
+            container.innerHTML = items.map(item => `
+                <div class="menu-card">
+                    <strong>${item.name}</strong> – ${item.price} ₽<br>
+                    <small>${item.description || ''}</small>
+                    <button class="btn-action" onclick="editMenuItem(${item.id}, '${item.name}', ${item.price}, '${item.description || ''}', '${item.weight || ''}', '${item.imageUrl || ''}', ${item.categoryId})">Ред.</button>
+                    <button class="btn-danger" onclick="deleteMenuItem(${item.id})">Удалить</button>
+                </div>
+            `).join('');
+        }
+
+        function openCategoryModal(id = null, name = '', sortOrder = 1) {
+            document.getElementById('modal').style.display = 'flex';
+            document.getElementById('modal-content').innerHTML = `
+                <h4>${id ? 'Редактировать категорию' : 'Добавить категорию'}</h4>
+                <div class="form-group"><label>Название</label><input id="catName" value="${name}"></div>
+                <div class="form-group"><label>Порядок</label><input id="catOrder" type="number" value="${sortOrder}"></div>
+                <button class="btn-action" onclick="saveCategory(${id})">Сохранить</button>
+                <button class="btn-danger" onclick="closeModal()">Отмена</button>
+            `;
+        }
+
+        async function saveCategory(id) {
+            const name = document.getElementById('catName').value;
+            const sortOrder = parseInt(document.getElementById('catOrder').value);
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API}/categories/${id}` : `${API}/categories`;
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ name, sortOrder })
+            });
+            closeModal();
+            loadCategories();
+        }
+
+        async function deleteCategory(id) {
+            if (confirm('Удалить категорию?')) {
+                await fetch(`${API}/categories/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadCategories();
+            }
+        }
+
+        function editCategory(id, name, sortOrder) { openCategoryModal(id, name, sortOrder); }
+
+        function openMenuItemModal(id = null, name = '', price = 0, description = '', weight = '', imageUrl = '', categoryId = null) {
+            // Загружаем категории для выпадающего списка
+            fetch(API + '/categories', { headers: { 'Authorization': `Bearer ${token}` } })
+                .then(r => r.json())
+                .then(cats => {
+                    document.getElementById('modal').style.display = 'flex';
+                    document.getElementById('modal-content').innerHTML = `
+                        <h4>${id ? 'Редактировать блюдо' : 'Добавить блюдо'}</h4>
+                        <div class="form-group"><label>Название</label><input id="itemName" value="${name}"></div>
+                        <div class="form-group"><label>Цена</label><input id="itemPrice" type="number" step="0.01" value="${price}"></div>
+                        <div class="form-group"><label>Описание</label><input id="itemDesc" value="${description}"></div>
+                        <div class="form-group"><label>Вес/объем</label><input id="itemWeight" value="${weight}"></div>
+                        <div class="form-group"><label>URL изображения</label><input id="itemImage" value="${imageUrl}"></div>
+                        <div class="form-group"><label>Категория</label>
+                            <select id="itemCategory">
+                                ${cats.map(c => `<option value="${c.id}" ${c.id === categoryId ? 'selected' : ''}>${c.name}</option>`).join('')}
+                            </select>
+                        </div>
+                        <button class="btn-action" onclick="saveMenuItem(${id})">Сохранить</button>
+                        <button class="btn-danger" onclick="closeModal()">Отмена</button>
+                    `;
+                });
+        }
+
+        async function saveMenuItem(id) {
+            const name = document.getElementById('itemName').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const description = document.getElementById('itemDesc').value;
+            const weight = document.getElementById('itemWeight').value;
+            const imageUrl = document.getElementById('itemImage').value;
+            const categoryId = parseInt(document.getElementById('itemCategory').value);
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API}/menu/${id}` : `${API}/menu`;
+            await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ name, price, description, weight, imageUrl, categoryId })
+            });
+            closeModal();
+            loadMenuItems();
+        }
+
+        async function deleteMenuItem(id) {
+            if (confirm('Удалить блюдо?')) {
+                await fetch(`${API}/menu/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                loadMenuItems();
+            }
+        }
+
+        function editMenuItem(id, name, price, description, weight, imageUrl, categoryId) {
+            openMenuItemModal(id, name, price, description, weight, imageUrl, categoryId);
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+        // Старт
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOrders();
+            // API для категорий нужно добавить в index.js (см. ниже)
+        });
+    </script>
+</body>
+</html>

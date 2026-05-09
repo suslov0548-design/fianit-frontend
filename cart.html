@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина - Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .cart-page {
+            padding: 40px 0;
+        }
+        .cart-items {
+            margin-bottom: 30px;
+        }
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+        }
+        .cart-item-info {
+            flex: 1;
+        }
+        .cart-item button {
+            background: none;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 5px 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .cart-item button:hover {
+            background-color: var(--gold);
+            color: #000;
+        }
+        .cart-total {
+            text-align: right;
+            font-size: 1.3rem;
+            margin: 20px 0;
+            color: var(--gold);
+        }
+        .checkout-form input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #333;
+            background: var(--bg-primary);
+            color: var(--text);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .btn-order {
+            background: var(--gold);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        .btn-order:hover {
+            background-color: var(--gold-light);
+        }
+        #order-message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .success {
+            color: var(--gold);
+        }
+        .error {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Фианит</a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="menu.html">Меню</a>
+                <a href="delivery.html">Доставка</a>
+                <a href="login.html">Сотрудникам</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="cart-page container">
+        <h1 style="color: var(--gold); margin-bottom: 30px;">Корзина</h1>
+        <div class="cart-items" id="cart-items">
+            <!-- Рендер через JS -->
+        </div>
+        <div class="cart-total">Итого: <span id="total-price">0</span> ₽</div>
+        <div class="checkout-form">
+            <h3>Оформление предзаказа</h3>
+            <input type="text" id="guestName" placeholder="Ваше имя" required>
+            <input type="tel" id="guestPhone" placeholder="+7 (___) ___-__-__" required>
+            <button class="btn-order" onclick="submitOrder()">Отправить предзаказ</button>
+            <p id="order-message"></p>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Ресторан «Фианит»</p>
+            <p>+7 (3952) 12-34-56</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Вспомогательная функция для получения корзины
+        function getCart() {
+            return JSON.parse(localStorage.getItem('cart')) || [];
+        }
+
+        // Вспомогательная функция обновления значка корзины (если есть)
+        function updateCartIcon() {
+            const cart = getCart();
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const countElem = document.getElementById('cart-count');
+            if (countElem) countElem.textContent = count;
+        }
+
+        // Отображение корзины
+        function renderCart() {
+            const container = document.getElementById('cart-items');
+            if (!container) return;
+            const cart = getCart();
+            if (cart.length === 0) {
+                container.innerHTML = '<p>Корзина пуста</p>';
+                document.getElementById('total-price').textContent = '0';
+                return;
+            }
+            container.innerHTML = cart.map((item, index) => `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <strong>${item.name}</strong> - ${item.price} ₽ x ${item.quantity}
+                    </div>
+                    <div>
+                        <button onclick="changeQuantity(${index}, -1)">-</button>
+                        <button onclick="changeQuantity(${index}, 1)">+</button>
+                        <button onclick="removeItem(${index})">Удалить</button>
+                    </div>
+                </div>
+            `).join('');
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const cart = getCart();
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            document.getElementById('total-price').textContent = total;
+        }
+
+        function changeQuantity(index, delta) {
+            let cart = getCart();
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartIcon();
+        }
+
+        function removeItem(index) {
+            let cart = getCart();
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartIcon();
+        }
+
+        // Отправка заказа на сервер
+        async function submitOrder() {
+            const name = document.getElementById('guestName').value.trim();
+            const phone = document.getElementById('guestPhone').value.trim();
+            const msgElem = document.getElementById('order-message');
+            const cart = getCart();
+
+            // Сброс сообщения
+            msgElem.textContent = '';
+            msgElem.className = '';
+
+            // Валидация
+            if (!name || !phone) {
+                msgElem.textContent = 'Заполните имя и телефон';
+                msgElem.className = 'error';
+                return;
+            }
+            // Проверка российского номера
+            const phoneRegex = /^(\+7|8)\d{10}$/;
+            if (!phoneRegex.test(phone.replace(/\s/g, ''))) {
+                msgElem.textContent = 'Введите корректный номер телефона (например, +7XXXXXXXXXX)';
+                msgElem.className = 'error';
+                return;
+            }
+            if (cart.length === 0) {
+                msgElem.textContent = 'Добавьте блюда в корзину';
+                msgElem.className = 'error';
+                return;
+            }
+
+            // Формируем объект заказа для API
+            const orderData = {
+                guestName: name,
+                guestPhone: phone,
+                items: cart.map(item => ({
+                    menuItemId: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                if (response.ok) {
+                    const createdOrder = await response.json();
+                    msgElem.textContent = `Спасибо! Ваш предзаказ №${createdOrder.id} отправлен.`;
+                    msgElem.className = 'success';
+                    localStorage.removeItem('cart');
+                    renderCart();
+                    updateCartIcon();
+                } else {
+                    const errorData = await response.json();
+                    msgElem.textContent = errorData.error || 'Ошибка оформления заказа';
+                    msgElem.className = 'error';
+                }
+            } catch (error) {
+                console.error('Ошибка сети:', error);
+                msgElem.textContent = 'Не удалось связаться с сервером. Попробуйте позже.';
+                msgElem.className = 'error';
+            }
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCart();
+            updateCartIcon();
+        });
+    </script>
+</body>
+</html>

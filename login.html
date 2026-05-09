@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход для сотрудников - Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .login-header {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gold);
+            text-align: center;
+        }
+        .login-header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-decoration: none;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            background: var(--bg-primary);
+            border: 1px solid #333;
+            color: var(--text);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .login-container .btn-gold {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .error {
+            color: #ff4444;
+            margin-top: 10px;
+        }
+        .test-info {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #ccc;
+            text-align: left;
+        }
+        .test-info p {
+            margin: 5px 0;
+        }
+        .test-info strong {
+            color: var(--gold);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-page">
+        <!-- Шапка с логотипом-ссылкой на главную -->
+        <header class="login-header">
+            <a href="index.html" class="logo">Фианит</a>
+        </header>
+
+        <form class="login-container" id="loginForm">
+            <h2 style="color: var(--gold); margin-bottom: 20px;">Вход в систему</h2>
+            <input type="text" id="username" placeholder="Имя пользователя" required autocomplete="username">
+            <input type="password" id="password" placeholder="Пароль" required autocomplete="current-password">
+            <button type="submit" class="btn-gold">Войти</button>
+            <p id="login-error" class="error"></p>
+            <div class="test-info">
+                <p><strong>Тестовые доступы:</strong></p>
+                <p>👤 Администратор: <strong>admin</strong> / <strong>admin123</strong></p>
+                <p>👤 Официант: <strong>waiter</strong> / <strong>waiter123</strong></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const errorElem = document.getElementById('login-error');
+
+            errorElem.textContent = '';
+
+            try {
+                const response = await fetch('http://localhost:3000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('role', data.role);
+
+                    if (data.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'waiter.html';
+                    }
+                } else {
+                    const err = await response.json();
+                    errorElem.textContent = err.error || 'Ошибка входа. Проверьте данные.';
+                }
+            } catch (error) {
+                console.error('Ошибка сети:', error);
+                errorElem.textContent = 'Сервер недоступен. Убедитесь, что backend запущен.';
+            }
+        });
+    </script>
+</body>
+</html>

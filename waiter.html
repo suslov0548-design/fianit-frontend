@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Официант - Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .waiter-panel {
+            padding: 40px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .order-card {
+            background: var(--bg-secondary);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+        .status-new { background: #f8cecc; color: #b85450; }
+        .status-confirmed { background: #d5e8d4; color: #82b366; }
+        .status-completed { background: #dae8fc; color: #6c8ebf; }
+        .status-cancelled { background: #eee; color: #666; }
+        .order-items {
+            margin: 10px 0;
+        }
+        .logout {
+            float: right;
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .error {
+            color: #ff4444;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Фианит</a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="menu.html">Меню</a>
+                <a href="delivery.html">Доставка</a>
+                <a href="login.html">Выход</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="waiter-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: var(--gold);">Панель официанта</h2>
+            <button class="logout" onclick="logout()">Выйти</button>
+        </div>
+        <p style="color: var(--text);">Просмотр всех заказов (без возможности изменения статуса).</p>
+        <div id="orders-container">
+            <p>Загрузка заказов...</p>
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+
+        // Проверка доступа
+        if (!token || role !== 'waiter') {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            window.location.href = 'login.html';
+        }
+
+        async function loadOrders() {
+            const container = document.getElementById('orders-container');
+            try {
+                const response = await fetch('http://localhost:3000/api/orders', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error('Ошибка загрузки');
+                const orders = await response.json();
+                if (orders.length === 0) {
+                    container.innerHTML = '<p>Нет заказов</p>';
+                    return;
+                }
+                container.innerHTML = orders.map(order => `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <strong>Заказ №${order.id}</strong>
+                            <span class="status-badge status-${order.status}">${order.status}</span>
+                        </div>
+                        <div>Гость: ${order.guestName} | Телефон: ${order.guestPhone}</div>
+                        <div>Сумма: ${order.totalAmount} ₽</div>
+                        <div class="order-items">
+                            ${order.orderItems.map(oi => `
+                                <div>– ${oi.menuItem.name} (x${oi.quantity}) – ${oi.price} ₽</div>
+                            `).join('')}
+                        </div>
+                        <!-- Кнопок подтверждения нет -->
+                    </div>
+                `).join('');
+            } catch (error) {
+                container.innerHTML = '<p class="error">Не удалось загрузить заказы</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadOrders);
+    </script>
+</body>
+</html>

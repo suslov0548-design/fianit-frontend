@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Меню - Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .menu-page {
+            padding: 40px 0;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+        }
+        .categories {
+            background-color: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        .categories h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        .categories a {
+            display: block;
+            color: var(--text);
+            text-decoration: none;
+            padding: 8px 0;
+            border-bottom: 1px solid #333;
+        }
+        .categories a:hover {
+            color: var(--gold);
+        }
+        .dishes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .dish-card {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .dish-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .dish-info {
+            padding: 15px;
+        }
+        .dish-info h4 {
+            color: var(--gold);
+        }
+        .dish-info .price {
+            color: var(--gold);
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .btn-add {
+            background-color: var(--gold);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            color: #000;
+            font-weight: bold;
+        }
+        .cart-icon {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: var(--gold);
+            padding: 10px;
+            border-radius: 50%;
+            color: #000;
+            font-weight: bold;
+            text-decoration: none;
+            z-index: 100;
+        }
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            .categories {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                gap: 10px;
+            }
+            .categories a {
+                border-bottom: none;
+                padding: 5px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Фианит</a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="menu.html">Меню</a>
+                <a href="delivery.html">Доставка</a>
+                <a href="login.html">Сотрудникам</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="menu-page container">
+        <h1 style="color: var(--gold); margin-bottom: 30px;">Наше меню</h1>
+        <div class="menu-grid">
+            <aside class="categories">
+    <h3>Категории</h3>
+    <a href="#" onclick="filterCategory('all')">Все блюда</a>
+    <a href="#" onclick="filterCategory('Закуски')">Закуски</a>
+    <a href="#" onclick="filterCategory('Салаты')">Салаты</a>
+    <a href="#" onclick="filterCategory('Супы')">Супы</a>
+    <a href="#" onclick="filterCategory('Горячее')">Горячее</a>
+    <a href="#" onclick="filterCategory('Десерты')">Десерты</a>
+    <a href="#" onclick="filterCategory('Напитки')">Напитки</a>
+</aside>
+            <section class="dishes" id="dishes-container">
+                <!-- Карточки будут добавлены через JS -->
+            </section>
+        </div>
+        <a href="cart.html" class="cart-icon" id="cart-icon">🛒 <span id="cart-count">0</span></a>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Ресторан «Фианит»</p>
+            <p>+7 (3952) 12-34-56</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <!-- Кнопка "Наверх" -->
+<style>
+    #scrollTopBtn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--gold);
+        color: #000;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: opacity 0.3s, transform 0.3s;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(20px);
+    }
+    #scrollTopBtn.show {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+    #scrollTopBtn:hover {
+        background: var(--gold-light);
+    }
+</style>
+
+<button id="scrollTopBtn" title="Наверх">↑</button>
+
+<script>
+    (function() {
+        const btn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ресторан Фианит</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .contacts {
+            padding: 60px 0;
+        }
+        .contacts h2 {
+            text-align: center;
+            color: var(--gold);
+            margin-bottom: 30px;
+        }
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        .contact-info {
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 8px;
+        }
+        .contact-info h3 {
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        .contact-info p {
+            margin: 12px 0;
+            font-size: 1.1rem;
+        }
+        .contact-info .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .vk-link {
+            display: inline-flex;
+            align-items: center;
+            background: #0077FF;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 15px;
+            transition: opacity 0.3s;
+        }
+        .vk-link:hover {
+            opacity: 0.9;
+        }
+        .vk-link img {
+            width: 24px;
+            margin-right: 10px;
+        }
+        .map-container {
+            border-radius: 8px;
+            overflow: hidden;
+            height: 100%;
+            min-height: 400px;
+        }
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+        @media (max-width: 768px) {
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+            .map-container {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">Фианит</a>
+            <nav class="nav">
+                <a href="index.html">Главная</a>
+                <a href="menu.html">Меню</a>
+                <a href="delivery.html">Доставка</a>
+                <a href="login.html">Сотрудникам</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Изысканная кухня<br>в центре города</h1>
+                <p>Европейские и кавказские блюда в уютной атмосфере</p>
+                <a href="menu.html" class="btn btn-gold">Смотреть меню</a>
+            </div>
+        </section>
+
+        <section class="features container">
+            <div class="feature">
+                <h3>🍽️ Основной зал</h3>
+                <p>Уютные столики и камерная обстановка</p>
+            </div>
+            <div class="feature">
+                <h3>🌿 Летняя терраса</h3>
+                <p>Открытая веранда с видом на парк</p>
+            </div>
+            <div class="feature">
+                <h3>🎉 Банкеты</h3>
+                <p>Проведение мероприятий до 50 гостей</p>
+            </div>
+        </section>
+
+        <section class="specials container">
+            <h2>Акции и специальные предложения</h2>
+            <div class="specials-grid">
+                <div class="special-card">
+                    <h4>Бизнес-ланч 350₽</h4>
+                    <p>С понедельника по пятницу с 12:00 до 16:00</p>
+                </div>
+                <div class="special-card">
+                    <h4>Скидка 20% на доставку</h4>
+                    <p>При первом заказе через наш сайт</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="contacts container">
+            <h2>Контакты</h2>
+            <div class="contacts-grid">
+                <div class="contact-info">
+                    <h3>Ресторан «Фианит»</h3>
+                    <p><span class="label">Телефон:</span><br>
+                    <strong>+7 (395) 222-72-92</strong></p>
+                    <p><span class="label">Адрес:</span><br>
+                    ул. Ширямова, 35, Иркутск</p>
+                    <p><span class="label">Часы работы:</span><br>
+                    пн–чт, вс 12:00–00:00<br>
+                    пт, сб 12:00–02:00</p>
+                    <a href="https://vk.com/sanya_1338" target="_blank" class="vk-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/VK.com-logo.svg" alt="VK">
+                        Мы ВКонтакте
+                    </a>
+                </div>
+                <div class="map-container">
+                    <iframe src="https://yandex.ru/map-widget/v1/?um=constructor%3A64f694f283685b3671fd41ba795b1a776eaf6436032a5a330fa67bb0c9da5421&amp;source=constructor" frameborder="0"></iframe>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>© 2026 Ресторан «Фианит»</p>
+            <p>+7 (395) 222-72-92</p>
+        </div>
+    </footer>
+    <!-- Cookie consent banner -->
+<div id="cookie-banner" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--bg-secondary);
+    color: var(--text);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 9999;
+    border-top: 1px solid var(--gold);
+    font-size: 0.95rem;
+    display: none;
+">
+    <span>🍪 Мы используем cookie для улучшения работы сайта. Продолжая, вы соглашаетесь с этим.</span>
+    <button id="cookie-accept" style="
+        background: var(--gold);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        cursor: pointer;
+        color: #000;
+    ">Принять</button>
+</div>
+
+<script>
+    // Показываем баннер, если ещё не принято
+    (function() {
+        const banner = document.getElementById('cookie-banner');
+        const btn = document.getElementById('cookie-accept');
+        if (!localStorage.getItem('cookieAccepted')) {
+            banner.style.display = 'flex';
+        }
+        btn.addEventListener('click', function() {
+            localStorage.setItem('cookieAccepted', 'true');
+            banner.style.display = 'none';
+        });
+    })();
+</script>
+<!-- Кнопка "Наверх" -->
+<style>
+    #scrollTopBtn {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: var(--gold);
+        color: #000;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: 999;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        transition: opacity 0.3s, transform 0.3s;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(20px);
+    }
+    #scrollTopBtn.show {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+    }
+    #scrollTopBtn:hover {
+        background: var(--gold-light);
+    }
+</style>
+
+<button id="scrollTopBtn" title="Наверх">↑</button>
+
+<script>
+    (function() {
+        const btn = document.getElementById('scrollTopBtn');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                btn.classList.add('show');
+            } else {
+                btn.classList.remove('show');
+            }
+        });
+        btn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    })();
+</script>
+</body>
+</html>
