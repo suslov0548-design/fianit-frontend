@@ -5,8 +5,8 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 // Загрузка меню с сервера
 async function fetchMenu(category = 'all') {
   const url = category === 'all'
-    ? 'http://localhost:3000/api/menu'
-    : `http://localhost:3000/api/menu?category=${category}`;
+    ? 'https://fianit-backend.onrender.com/api/menu'
+    : `https://fianit-backend.onrender.com/api/menu?category=${category}`;
   const response = await fetch(url);
   const data = await response.json();
   return data;

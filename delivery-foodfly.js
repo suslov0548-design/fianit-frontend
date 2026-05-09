@@ -1,6 +1,6 @@
 (function() {
     // ---------- API ----------
-    const API_BASE = 'http://localhost:3000/api';
+    const API_BASE = 'https://fianit-backend.onrender.com/api';
 
     // ---------- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ----------
     let menuItems = [];      // загружается с API
